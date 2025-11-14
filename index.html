@@ -1,61 +1,51 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Master CRM - Herlon</title>
-    <link rel="stylesheet" href="styles.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master CRM</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-    <!-- TELA DE LOGIN -->
-    <div id="login-screen">
-        <h2>Login</h2>
-        <input type="text" id="username" placeholder="Usuário">
-        <input type="password" id="password" placeholder="Senha">
-        <button onclick="login()">Entrar</button>
-    </div>
+<div id="login-container">
+    <h2>Login</h2>
+    <input id="username" placeholder="Usuário">
+    <input id="password" type="password" placeholder="Senha">
+    <button onclick="login()">Entrar</button>
+</div>
 
-    <!-- CRM -->
-    <div id="crm" class="hidden">
+<div id="crm-container" style="display:none;">
+    <header>
+        <h1>Master CRM</h1>
+        <button onclick="logout()">Sair</button>
+    </header>
 
-        <header>
-            <h1>Master CRM - Herlon</h1>
-            <button id="logoutBtn" onclick="logout()">Sair</button>
-        </header>
-
-        <div class="columns-container">
-            <!-- NOVO LEAD -->
-            <div class="column" data-status="novo">
-                <h2>Novo Lead</h2>
-                <button class="add-card-btn" onclick="addCard('novo')">+ Novo</button>
-                <div class="card-list" id="novo"></div>
-            </div>
-
-            <!-- NEGOCIAÇÃO -->
-            <div class="column" data-status="negociacao">
-                <h2>Negociação</h2>
-                <button class="add-card-btn" onclick="addCard('negociacao')">+ Novo</button>
-                <div class="card-list" id="negociacao"></div>
-            </div>
-
-            <!-- NEGOCIAÇÃO EM ANDAMENTO -->
-            <div class="column" data-status="andamento">
-                <h2>Negociação em Andamento</h2>
-                <button class="add-card-btn" onclick="addCard('andamento')">+ Novo</button>
-                <div class="card-list" id="andamento"></div>
-            </div>
-
-            <!-- FECHADO -->
-            <div class="column" data-status="fechado">
-                <h2>Fechado</h2>
-                <button class="add-card-btn" onclick="addCard('fechado')">+ Novo</button>
-                <div class="card-list" id="fechado"></div>
-            </div>
+    <div class="columns">
+        <div class="column" ondrop="drop(event)" ondragover="allowDrop(event)">
+            <h3>Novo Lead</h3>
+            <div id="novo-lead" class="card-container"></div>
         </div>
 
+        <div class="column" ondrop="drop(event)" ondragover="allowDrop(event)">
+            <h3>Negociação</h3>
+            <div id="negociacao" class="card-container"></div>
+        </div>
+
+        <div class="column" ondrop="drop(event)" ondragover="allowDrop(event)">
+            <h3>Negociação em Andamento</h3>
+            <div id="andamento" class="card-container"></div>
+        </div>
+
+        <div class="column" ondrop="drop(event)" ondragover="allowDrop(event)">
+            <h3>Fechado</h3>
+            <div id="fechado" class="card-container"></div>
+        </div>
     </div>
 
-    <script src="script.js"></script>
+    <button id="add-card" onclick="addCard()">+ Adicionar Lead</button>
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>
