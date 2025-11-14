@@ -8,17 +8,14 @@
 </head>
 <body>
 
-<!-- LOGIN -->
-<div id="login-container">
-  <h2>Login</h2>
-  <input id="username" placeholder="Usuário">
-  <input id="password" type="password" placeholder="Senha">
-  <button onclick="login()">Entrar</button>
+<!-- Tela inicial simples -->
+<div id="welcome-screen">
+  <h1>Master CRM</h1>
+  <button onclick="enterCRM()">Entrar no CRM</button>
 </div>
 
 <!-- CRM -->
 <div id="crm-container" class="hidden">
-
   <header>
     <h1>Master CRM</h1>
     <button onclick="logout()">Sair</button>
@@ -49,7 +46,6 @@
       <div class="card-list" id="fechado"></div>
     </div>
   </div>
-
 </div>
 
 <script src="script.js"></script>
