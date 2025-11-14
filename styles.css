@@ -4,40 +4,33 @@ body {
   background: #f4f5f7;
 }
 
-/* LOGIN */
-#login-container {
-  width: 320px;
-  margin: 120px auto;
-  background: #fff;
-  padding: 25px;
-  border-radius: 12px;
-  text-align: center;
-  box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+/* Tela inicial */
+#welcome-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
 }
 
-#login-container input {
-  width: 90%;
-  padding: 12px;
-  margin: 10px 0;
-  border-radius: 6px;
-  border: 1px solid #ccc;
+#welcome-screen h1 {
+  font-size: 40px;
+  margin-bottom: 20px;
 }
 
-#login-container button {
-  width: 95%;
-  padding: 12px;
+#welcome-screen button {
+  padding: 15px 25px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
   background: #3a6cf4;
   color: #fff;
-  border: none;
-  border-radius: 6px;
   cursor: pointer;
 }
 
-.hidden {
-  display: none;
-}
-
 /* CRM */
+.hidden { display: none; }
+
 header {
   background: #026aa7;
   color: #fff;
@@ -71,13 +64,11 @@ header button {
   max-width: 300px;
   display: flex;
   flex-direction: column;
-  height: fit-content;
 }
 
 .column h2 {
   margin-top: 0;
   margin-bottom: 10px;
-  font-size: 18px;
 }
 
 .column button {
