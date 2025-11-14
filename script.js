@@ -1,19 +1,7 @@
-// Entrar no CRM
-function enterCRM() {
-  document.getElementById("welcome-screen").classList.add("hidden");
-  document.getElementById("crm-container").classList.remove("hidden");
-  renderCards();
-}
-
-function logout() {
-  document.getElementById("crm-container").classList.add("hidden");
-  document.getElementById("welcome-screen").classList.remove("hidden");
-}
-
 // Adicionar card
 function addCard(column){
   const cards = JSON.parse(localStorage.getItem("cards")||"[]");
-  const newCard = {id:Date.now(),text:"",column:column};
+  const newCard = {id:Date.now(), text:"", column:column};
   cards.push(newCard);
   localStorage.setItem("cards", JSON.stringify(cards));
   renderCards();
@@ -22,15 +10,15 @@ function addCard(column){
 // Renderizar cards
 function renderCards(){
   const columns = ["novo","negociacao","andamento","fechado"];
-  columns.forEach(c=>document.getElementById(c).innerHTML="");
+  columns.forEach(c => document.getElementById(c).innerHTML = "");
   const cards = JSON.parse(localStorage.getItem("cards")||"[]");
-  cards.forEach(card=>{
-    const div=document.createElement("div");
-    div.className="card";
-    div.draggable=true;
-    div.dataset.id=card.id;
-    div.ondragstart=drag;
-    div.innerHTML=`
+  cards.forEach(card => {
+    const div = document.createElement("div");
+    div.className = "card";
+    div.draggable = true;
+    div.dataset.id = card.id;
+    div.ondragstart = drag;
+    div.innerHTML = `
       <textarea onkeyup="updateCard(${card.id}, this.value)">${card.text}</textarea>
       <button class="delete-btn" onclick="deleteCard(${card.id})">X</button>
     `;
@@ -38,8 +26,8 @@ function renderCards(){
   });
 }
 
-// Atualizar texto
-function updateCard(id,value){
+// Atualizar card
+function updateCard(id, value){
   const cards = JSON.parse(localStorage.getItem("cards")||"[]");
   const index = cards.findIndex(c=>c.id===id);
   cards[index].text = value;
