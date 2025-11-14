@@ -4,48 +4,12 @@ body {
   background: #f4f5f7;
 }
 
-/* Tela inicial */
-#welcome-screen {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-}
-
-#welcome-screen h1 {
-  font-size: 40px;
-  margin-bottom: 20px;
-}
-
-#welcome-screen button {
-  padding: 15px 25px;
-  font-size: 16px;
-  border: none;
-  border-radius: 8px;
-  background: #3a6cf4;
-  color: #fff;
-  cursor: pointer;
-}
-
-/* CRM */
-.hidden { display: none; }
-
 header {
   background: #026aa7;
   color: #fff;
   padding: 15px 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-header button {
-  background: #eb5a46;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 6px;
-  cursor: pointer;
+  text-align: center;
+  font-size: 24px;
 }
 
 .columns-container {
@@ -69,6 +33,7 @@ header button {
 .column h2 {
   margin-top: 0;
   margin-bottom: 10px;
+  font-size: 18px;
 }
 
 .column button {
