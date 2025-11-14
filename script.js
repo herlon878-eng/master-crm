@@ -1,119 +1,84 @@
-body {
-    margin: 0;
-    font-family: 'Segoe UI', Arial, sans-serif;
-    background: #f0f2f5;
+function login() {
+  const user = document.getElementById("username").value;
+  const pass = document.getElementById("password").value;
+  if(user === "admin" && pass === "1234") {
+    document.getElementById("login-container").classList.add("hidden");
+    document.getElementById("crm-container").classList.remove("hidden");
+    renderCards();
+  } else {
+    alert("Usuário ou senha incorretos!");
+  }
 }
 
-/* LOGIN */
-#login-container {
-    width: 320px;
-    margin: 120px auto;
-    background: #fff;
-    padding: 25px;
-    border-radius: 12px;
-    text-align: center;
-    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+function logout() {
+  document.getElementById("crm-container").classList.add("hidden");
+  document.getElementById("login-container").classList.remove("hidden");
 }
 
-#login-container input {
-    width: 90%;
-    padding: 12px;
-    margin: 10px 0;
-    border-radius: 6px;
-    border: 1px solid #ccc;
+// Adicionar card
+function addCard(column){
+  const cards = JSON.parse(localStorage.getItem("cards")||"[]");
+  const newCard = {id:Date.now(),text:"",column:column};
+  cards.push(newCard);
+  localStorage.setItem("cards", JSON.stringify(cards));
+  renderCards();
 }
 
-#login-container button {
-    width: 95%;
-    padding: 12px;
-    background: #3a6cf4;
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
+// Renderizar cards
+function renderCards(){
+  const columns = ["novo","negociacao","andamento","fechado"];
+  columns.forEach(c=>document.getElementById(c).innerHTML="");
+  const cards = JSON.parse(localStorage.getItem("cards")||"[]");
+  cards.forEach(card=>{
+    const div=document.createElement("div");
+    div.className="card";
+    div.draggable=true;
+    div.dataset.id=card.id;
+    div.ondragstart=drag;
+    div.innerHTML=`
+      <textarea onkeyup="updateCard(${card.id}, this.value)">${card.text}</textarea>
+      <button class="delete-btn" onclick="deleteCard(${card.id})">X</button>
+    `;
+    document.getElementById(card.column).appendChild(div);
+  });
 }
 
-.hidden {
-    display: none;
+// Atualizar texto
+function updateCard(id,value){
+  const cards = JSON.parse(localStorage.getItem("cards")||"[]");
+  const index = cards.findIndex(c=>c.id===id);
+  cards[index].text = value;
+  localStorage.setItem("cards", JSON.stringify(cards));
 }
 
-/* CRM */
-header {
-    background: #3a6cf4;
-    color: #fff;
-    padding: 15px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+// Excluir card
+function deleteCard(id){
+  let cards = JSON.parse(localStorage.getItem("cards")||"[]");
+  cards = cards.filter(c=>c.id!==id);
+  localStorage.setItem("cards", JSON.stringify(cards));
+  renderCards();
 }
 
-header button {
-    background: #f0a500;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 6px;
-    cursor: pointer;
+// Drag & Drop
+function allowDrop(ev){ ev.preventDefault(); }
+function drag(ev){ ev.dataTransfer.setData("id", ev.target.dataset.id); }
+function drop(ev){
+  ev.preventDefault();
+  const id = ev.dataTransfer.getData("id");
+  const cards = JSON.parse(localStorage.getItem("cards")||"[]");
+  const card = cards.find(c=>c.id==id);
+  const columnDiv = ev.currentTarget.querySelector(".card-list");
+  if(columnDiv){
+    card.column = columnDiv.id;
+    localStorage.setItem("cards", JSON.stringify(cards));
+    renderCards();
+  }
 }
 
-.columns-container {
-    display: flex;
-    gap: 15px;
-    padding: 20px;
-    flex-wrap: wrap;
-}
-
-.column {
-    background: #fff;
-    border-radius: 12px;
-    padding: 15px;
-    flex: 1;
-    min-width: 250px;
-    max-width: 300px;
-    display: flex;
-    flex-direction: column;
-}
-
-.column button {
-    margin-bottom: 10px;
-    padding: 8px;
-    background: #3a6cf4;
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-}
-
-.card-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.card {
-    background: #e8e8e8;
-    border-radius: 8px;
-    padding: 10px;
-    cursor: grab;
-    position: relative;
-}
-
-.card textarea {
-    width: 100%;
-    border: none;
-    border-radius: 6px;
-    padding: 6px;
-    resize: none;
-    font-size: 14px;
-}
-
-.card button.delete-btn {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    background: #e74c3c;
-    color: #fff;
-    border: none;
-    padding: 3px 6px;
-    border-radius: 4px;
-    cursor: pointer;
-}
+window.onload=function(){
+  document.querySelectorAll(".column").forEach(col=>{
+    col.ondragover = allowDrop;
+    col.ondrop = drop;
+  });
+  renderCards();
+};
