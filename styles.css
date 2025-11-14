@@ -1,85 +1,82 @@
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: #f3f3f3;
+function login() {
+    const user = document.getElementById("username").value;
+    const pass = document.getElementById("password").value;
+    if(user==="admin" && pass==="1234"){
+        document.getElementById("login-container").classList.add("hidden");
+        document.getElementById("crm-container").classList.remove("hidden");
+        renderCards();
+    } else { alert("Usuário ou senha incorretos!"); }
 }
 
-/* LOGIN */
-#login-container {
-    width: 300px;
-    margin: 100px auto;
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    text-align: center;
-    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+function logout() {
+    document.getElementById("crm-container").classList.add("hidden");
+    document.getElementById("login-container").classList.remove("hidden");
 }
 
-#login-container input {
-    width: 90%;
-    padding: 10px;
-    margin: 10px 0;
+// Adicionar card
+function addCard(column){
+    const cards = JSON.parse(localStorage.getItem("cards")||"[]");
+    const newCard = {id:Date.now(),text:"",column:column};
+    cards.push(newCard);
+    localStorage.setItem("cards",JSON.stringify(cards));
+    renderCards();
 }
 
-#login-container button {
-    padding: 10px 15px;
-    cursor: pointer;
+// Renderizar cards
+function renderCards(){
+    const columns=["novo","negociacao","andamento","fechado"];
+    columns.forEach(c=>document.getElementById(c).innerHTML="");
+    const cards = JSON.parse(localStorage.getItem("cards")||"[]");
+    cards.forEach(card=>{
+        const div=document.createElement("div");
+        div.className="card";
+        div.draggable=true;
+        div.dataset.id=card.id;
+        div.ondragstart=drag;
+        div.innerHTML=`
+            <textarea onkeyup="updateCard(${card.id},this.value)">${card.text}</textarea>
+            <button class="delete-btn" onclick="deleteCard(${card.id})">X</button>
+        `;
+        document.getElementById(card.column).appendChild(div);
+    });
 }
 
-.hidden {
-    display: none;
+// Atualizar texto
+function updateCard(id,value){
+    const cards = JSON.parse(localStorage.getItem("cards")||"[]");
+    const index = cards.findIndex(c=>c.id===id);
+    cards[index].text=value;
+    localStorage.setItem("cards",JSON.stringify(cards));
 }
 
-/* CRM */
-header {
-    background: #3a6cf4;
-    color: white;
-    padding: 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+// Excluir card
+function deleteCard(id){
+    let cards = JSON.parse(localStorage.getItem("cards")||"[]");
+    cards = cards.filter(c=>c.id!==id);
+    localStorage.setItem("cards",JSON.stringify(cards));
+    renderCards();
 }
 
-.columns-container {
-    display: flex;
-    gap: 10px;
-    padding: 15px;
+// Drag & drop
+function allowDrop(ev){ev.preventDefault();}
+function drag(ev){ev.dataTransfer.setData("id",ev.target.dataset.id);}
+function drop(ev){
+    ev.preventDefault();
+    const id = ev.dataTransfer.getData("id");
+    const cards = JSON.parse(localStorage.getItem("cards")||"[]");
+    const card = cards.find(c=>c.id==id);
+    const columnDiv = ev.currentTarget.querySelector(".card-list");
+    if(columnDiv){
+        card.column = columnDiv.id;
+        localStorage.setItem("cards",JSON.stringify(cards));
+        renderCards();
+    }
 }
 
-.column {
-    background: #fff;
-    border-radius: 10px;
-    padding: 10px;
-    width: 25%;
-    min-height: 500px;
-    display: flex;
-    flex-direction: column;
-}
-
-.add-card-btn {
-    width: 100%;
-    padding: 8px;
-    cursor: pointer;
-    margin-bottom: 10px;
-    background: #3a6cf4;
-    color: white;
-    border: none;
-    border-radius: 5px;
-}
-
-.card {
-    background: #e8e8e8;
-    padding: 10px;
-    border-radius: 8px;
-    margin-bottom: 10px;
-    cursor: grab;
-}
-
-.card textarea {
-    width: 100%;
-    height: 80px;
-    border-radius: 5px;
-    border: none;
-    padding: 5px;
-    resize: none;
-}
+window.onload=function(){
+    document.querySelectorAll(".column").forEach(col=>{
+        col.ondragover=allowDrop;
+        col.ondrop=drop;
+    });
+    renderCards();
+};
