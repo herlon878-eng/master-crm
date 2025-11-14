@@ -8,43 +8,33 @@
 </head>
 <body>
 
-<!-- Tela inicial simples -->
-<div id="welcome-screen">
+<header>
   <h1>Master CRM</h1>
-  <button onclick="enterCRM()">Entrar no CRM</button>
-</div>
+</header>
 
-<!-- CRM -->
-<div id="crm-container" class="hidden">
-  <header>
-    <h1>Master CRM</h1>
-    <button onclick="logout()">Sair</button>
-  </header>
+<div class="columns-container">
+  <div class="column" data-column="novo" ondrop="drop(event)" ondragover="allowDrop(event)">
+    <h2>Novo Lead</h2>
+    <button onclick="addCard('novo')">+ Novo Lead</button>
+    <div class="card-list" id="novo"></div>
+  </div>
 
-  <div class="columns-container">
-    <div class="column" data-column="novo" ondrop="drop(event)" ondragover="allowDrop(event)">
-      <h2>Novo Lead</h2>
-      <button onclick="addCard('novo')">+ Novo Lead</button>
-      <div class="card-list" id="novo"></div>
-    </div>
+  <div class="column" data-column="negociacao" ondrop="drop(event)" ondragover="allowDrop(event)">
+    <h2>Negociação</h2>
+    <button onclick="addCard('negociacao')">+ Novo Lead</button>
+    <div class="card-list" id="negociacao"></div>
+  </div>
 
-    <div class="column" data-column="negociacao" ondrop="drop(event)" ondragover="allowDrop(event)">
-      <h2>Negociação</h2>
-      <button onclick="addCard('negociacao')">+ Novo Lead</button>
-      <div class="card-list" id="negociacao"></div>
-    </div>
+  <div class="column" data-column="andamento" ondrop="drop(event)" ondragover="allowDrop(event)">
+    <h2>Negociação em Andamento</h2>
+    <button onclick="addCard('andamento')">+ Novo Lead</button>
+    <div class="card-list" id="andamento"></div>
+  </div>
 
-    <div class="column" data-column="andamento" ondrop="drop(event)" ondragover="allowDrop(event)">
-      <h2>Negociação em Andamento</h2>
-      <button onclick="addCard('andamento')">+ Novo Lead</button>
-      <div class="card-list" id="andamento"></div>
-    </div>
-
-    <div class="column" data-column="fechado" ondrop="drop(event)" ondragover="allowDrop(event)">
-      <h2>Fechado</h2>
-      <button onclick="addCard('fechado')">+ Novo Lead</button>
-      <div class="card-list" id="fechado"></div>
-    </div>
+  <div class="column" data-column="fechado" ondrop="drop(event)" ondragover="allowDrop(event)">
+    <h2>Fechado</h2>
+    <button onclick="addCard('fechado')">+ Novo Lead</button>
+    <div class="card-list" id="fechado"></div>
   </div>
 </div>
 
