@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Master CRM</title>
+    <title>Master CRM - Herlon</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
+<!-- LOGIN -->
 <div id="login-container">
     <h2>Login</h2>
     <input id="username" placeholder="Usuário">
@@ -15,35 +16,39 @@
     <button onclick="login()">Entrar</button>
 </div>
 
-<div id="crm-container" style="display:none;">
+<!-- CRM -->
+<div id="crm-container" class="hidden">
+
     <header>
         <h1>Master CRM</h1>
         <button onclick="logout()">Sair</button>
     </header>
 
-    <div class="columns">
-        <div class="column" ondrop="drop(event)" ondragover="allowDrop(event)">
-            <h3>Novo Lead</h3>
-            <div id="novo-lead" class="card-container"></div>
+    <div class="columns-container">
+        <div class="column" data-status="novo" ondrop="drop(event)" ondragover="allowDrop(event)">
+            <h2 style="color:#3a6cf4">Novo Lead</h2>
+            <button onclick="addCard('novo')">+ Novo Lead</button>
+            <div id="novo" class="card-list"></div>
         </div>
 
-        <div class="column" ondrop="drop(event)" ondragover="allowDrop(event)">
-            <h3>Negociação</h3>
-            <div id="negociacao" class="card-container"></div>
+        <div class="column" data-status="negociacao" ondrop="drop(event)" ondragover="allowDrop(event)">
+            <h2 style="color:#f0a500">Negociação</h2>
+            <button onclick="addCard('negociacao')">+ Novo Lead</button>
+            <div id="negociacao" class="card-list"></div>
         </div>
 
-        <div class="column" ondrop="drop(event)" ondragover="allowDrop(event)">
-            <h3>Negociação em Andamento</h3>
-            <div id="andamento" class="card-container"></div>
+        <div class="column" data-status="andamento" ondrop="drop(event)" ondragover="allowDrop(event)">
+            <h2 style="color:#8e44ad">Negociação em Andamento</h2>
+            <button onclick="addCard('andamento')">+ Novo Lead</button>
+            <div id="andamento" class="card-list"></div>
         </div>
 
-        <div class="column" ondrop="drop(event)" ondragover="allowDrop(event)">
-            <h3>Fechado</h3>
-            <div id="fechado" class="card-container"></div>
+        <div class="column" data-status="fechado" ondrop="drop(event)" ondragover="allowDrop(event)">
+            <h2 style="color:#27ae60">Fechado</h2>
+            <button onclick="addCard('fechado')">+ Novo Lead</button>
+            <div id="fechado" class="card-list"></div>
         </div>
     </div>
-
-    <button id="add-card" onclick="addCard()">+ Adicionar Lead</button>
 </div>
 
 <script src="script.js"></script>
