@@ -1,18 +1,13 @@
-function login() {
-  const user = document.getElementById("username").value;
-  const pass = document.getElementById("password").value;
-  if(user === "admin" && pass === "1234") {
-    document.getElementById("login-container").classList.add("hidden");
-    document.getElementById("crm-container").classList.remove("hidden");
-    renderCards();
-  } else {
-    alert("Usuário ou senha incorretos!");
-  }
+// Entrar no CRM
+function enterCRM() {
+  document.getElementById("welcome-screen").classList.add("hidden");
+  document.getElementById("crm-container").classList.remove("hidden");
+  renderCards();
 }
 
 function logout() {
   document.getElementById("crm-container").classList.add("hidden");
-  document.getElementById("login-container").classList.remove("hidden");
+  document.getElementById("welcome-screen").classList.remove("hidden");
 }
 
 // Adicionar card
@@ -75,7 +70,7 @@ function drop(ev){
   }
 }
 
-window.onload=function(){
+window.onload = function(){
   document.querySelectorAll(".column").forEach(col=>{
     col.ondragover = allowDrop;
     col.ondrop = drop;
