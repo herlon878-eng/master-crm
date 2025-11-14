@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Master CRM — Completo</title>
+  <meta name="description" content="Master CRM — Kanban leve, drag & drop, localStorage. Pronto para GitHub Pages." />
+  <style>
+    :root{
+      --bg:#f5f7fb;
+      --card:#ffffff;
+      --muted:#6b7280;
+      --accent:#2563eb;
+      --success:#16a34a;
+      --shadow: 0 6px 18px rgba(15,23,42,0.06);
+      --radius:12px;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    body.dark{
+      --bg:#0f1724;
+      --card:#0b1220;
+      --muted:#9ca3af;
+      --accent:#60a5fa;
+      --success:#34d399;
+      --shadow: 0 8px 22px rgba(2,6,23,0.6);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--muted);min-height:100vh;display:flex;flex-direction:column}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;background:transparent}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#7c3aed);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;box-shadow:var(--shadow)}
+    h1{margin:0;font-size:18px;color:var(--muted)}
+    .controls{display:flex;gap:8px;align-items:center}
+    .search{padding:8px 12px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);min-width:260px}
+    button{background:var(--accent);color:white;border:0;padding:9px 12px;border-radius:10px;cursor:pointer;font-weight:600}
+    button.ghost{background:transparent;color:var(--accent);border:1px solid rgba(37,99,235,0.12)}
+    .btn-small{padding:7px 10px;font-size:13px;border-radius:8px}
+    main{padding:18px;flex:1}
+    .board{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;align-items:start}
+    .col{background:var(--card);padding:12px;border-radius:var(--radius);box-shadow:var(--shadow);min-height:360px;border:1px solid rgba(0,0,0,0.04)}
+    .col h2{margin:0 0 8px 0;color:var(--muted);font-size:14px;display:flex;align-items:center;justify-content:space-between}
+    .col .count{background:rgba(37,99,235,0.09);color:var(--accent);padding:6px 8px;border-radius:999px;font-weight:700;font-size:12px}
+    .dropzone{min-height:260px;padding:6px;border-radius:8px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.98),var(--card));padding:12px;border-radius:10px;margin-bottom:10px;border:1px solid rgba(0,0,0,0.04);cursor:grab;color:var(--muted)}
+    .card .title{font-weight:700;color:inherit}
+    .card small{display:block;color:var(--muted);margin-top:6px}
+    .card.dragging{opacity:0.5}
+    .footer{padding:12px;text-align:center;color:var(--muted);font-size:13px}
+    /* modal */
+    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(2,6,23,0.45);z-index:120}
+    .modal.open{display:flex}
+    .panel{background:var(--card);width:min(760px,96%);padding:16px;border-radius:12px;box-shadow:0 10px 40px rgba(2,6,23,0.3)}
+    .form-row{display:flex;gap:8px}
+    .form-row > *{flex:1}
+    input[type=text],textarea,select{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);font-size:14px}
+    textarea{resize:vertical;min-height:100px}
+    .meta{display:flex;gap:8px;align-items:center}
+    .right{text-align:right}
+    /* responsive */
+    @media (max-width:1000px){ .board{grid-template-columns:repeat(2,1fr)} .search{min-width:160px} }
+    @media (max-width:600px){ header{flex-direction:column;align-items:flex-start;gap:12px} .board{grid-template-columns:1fr} .search{width:100%} .controls{flex-wrap:wrap} }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">MC</div>
+      <div>
+        <h1>Master CRM</h1>
+        <div style="font-size:12px;color:var(--muted)">Painel de leads — Kanban rápido</div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <input id="search" class="search" placeholder="Pesquisar por nome, email ou telefone" />
+      <button id="btnNew" class="btn-small">+ Novo lead</button>
+      <button id="btnExport" class="ghost btn-small">Exportar</button>
+      <button id="btnImport" class="ghost btn-small">Importar</button>
+      <button id="btnTheme" class="btn-small ghost">Tema</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="board" id="board">
+      <section class="col" data-status="Novo Lead">
+        <h2>Novo Lead <span class="count" id="count-novo">0</span></h2>
+        <div class="dropzone" id="col-novo"></div>
+      </section>
+
+      <section class="col" data-status="Negociação">
+        <h2>Negociação <span class="count" id="count-neg">0</span></h2>
+        <div class="dropzone" id="col-neg"></div>
+      </section>
+
+      <section class="col" data-status="Negociação em Andamento">
+        <h2>Negociação em Andamento <span class="count" id="count-and">0</span></h2>
+        <div class="dropzone" id="col-andamento"></div>
+      </section>
+
+      <section class="col" data-status="Fechado">
+        <h2>Fechado <span class="count" id="count-fechado">0</span></h2>
+        <div class="dropzone" id="col-fechado"></div>
+      </section>
+    </div>
+
+    <div class="footer">Salvo localmente (no seu navegador). Faça export antes de limpar.</div>
+  </main>
+
+  <div id="modal" class="modal" role="dialog" aria-hidden="true">
+    <div class="panel" role="document">
+      <h3 id="modalTitle">Novo Lead</h3>
+      <form id="formLead">
+        <input type="hidden" id="leadId" />
+        <div style="margin-bottom:10px">
+          <label style="font-weight:600;color:var(--muted)">Nome</label>
+          <input id="name" type="text" placeholder="Nome do lead" required />
+        </div>
+
+        <div class="form-row" style="margin-bottom:10px">
+          <div>
+            <label style="font-weight:600;color:var(--muted)">Telefone</label>
+            <input id="phone" type="text" placeholder="(11) 9xxxx-xxxx" />
+          </div>
+          <div>
+            <label style="font-weight:600;color:var(--muted)">Email</label>
+            <input id="email" type="text" placeholder="exemplo@provedor.com" />
+          </div>
+        </div>
+
+        <div style="margin-bottom:10px">
+          <label style="font-weight:600;color:var(--muted)">Observações / Eventos</label>
+          <textarea id="notes" placeholder="Registre contatos, propostas, agendamentos..."></textarea>
+        </div>
+
+        <div style="margin-bottom:12px">
+          <label style="font-weight:600;color:var(--muted)">Status</label>
+          <select id="status">
+            <option>Novo Lead</option>
+            <option>Negociação</option>
+            <option>Negociação em Andamento</option>
+            <option>Fechado</option>
+          </select>
+        </div>
+
+        <div style="display:flex;gap:8px;justify-content:flex-end">
+          <button type="button" id="btnDelete" class="ghost btn-small">Excluir</button>
+          <button type="button" id="btnCancel" class="ghost btn-small">Cancelar</button>
+          <button type="submit" class="btn-small">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+<script>
+/* Master CRM — single-file logic (localStorage) */
+const STORAGE_KEY = 'master_crm_v1';
+let leads = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+
+const columns = {
+  'Novo Lead': document.getElementById('col-novo'),
+  'Negociação': document.getElementById('col-neg'),
+  'Negociação em Andamento': document.getElementById('col-andamento'),
+  'Fechado': document.getElementById('col-fechado')
+};
+
+function uid(){ return 'id-'+Date.now()+'-'+Math.floor(Math.random()*9000+1000) }
+
+function save(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(leads)); updateCounts(); }
+
+function updateCounts(){
+  document.getElementById('count-novo').textContent = leads.filter(l=>l.status==='Novo Lead').length;
+  document.getElementById('count-neg').textContent = leads.filter(l=>l.status==='Negociação').length;
+  document.getElementById('count-and').textContent = leads.filter(l=>l.status==='Negociação em Andamento').length;
+  document.getElementById('count-fechado').textContent = leads.filter(l=>l.status==='Fechado').length;
+}
+
+/* render */
+function render(){
+  Object.values(columns).forEach(c=>c.innerHTML='');
+  const q = document.getElementById('search').value.trim().toLowerCase();
+  leads.forEach(lead=>{
+    if(q){
+      const hay = (lead.name+' '+(lead.email||'')+' '+(lead.phone||'')).toLowerCase();
+      if(!hay.includes(q)) return;
+    }
+    const el = makeCard(lead);
+    columns[lead.status || 'Novo Lead'].appendChild(el);
+  });
+  save();
+}
+
+function makeCard(lead){
+  const div = document.createElement('div');
+  div.className = 'card';
+  div.draggable = true;
+  div.dataset.id = lead.id;
+  div.innerHTML = `<div class="title">${escapeHtml(lead.name||'(sem nome)')}</div>
+                   <small>${escapeHtml(lead.email||'')} ${lead.phone? '• '+escapeHtml(lead.phone): ''}</small>`;
+  div.addEventListener('click', ()=> openModal(lead.id));
+  div.addEventListener('dragstart', e=>{
+    e.dataTransfer.setData('text/plain', lead.id);
+    div.classList.add('dragging');
+  });
+  div.addEventListener('dragend', ()=> div.classList.remove('dragging'));
+  return div;
+}
+
+/* drag & drop */
+Object.values(columns).forEach(zone=>{
+  zone.addEventListener('dragover', e=>{ e.preventDefault(); zone.style.background = 'rgba(2,6,23,0.03)'; });
+  zone.addEventListener('dragleave', ()=> zone.style.background = '');
+  zone.addEventListener('drop', e=>{
+    e.preventDefault(); zone.style.background = '';
+    const id = e.dataTransfer.getData('text/plain');
+    const lead = leads.find(l=>l.id===id);
+    if(lead){
+      lead.status = zone.parentElement.dataset.status;
+      render();
+    }
+  });
+});
+
+/* modal */
+const modal = document.getElementById('modal');
+const form = document.getElementById('formLead');
+const fields = ['leadId','name','phone','email','notes','status'];
+
+function openModal(id){
+  document.getElementById('modalTitle').textContent = id? 'Editar Lead' : 'Novo Lead';
+  if(id){
+    const lead = leads.find(l=>l.id===id);
+    fields.forEach(f=> document.getElementById(f).value = lead[f] || (f==='status'?lead.status:''));
+    document.getElementById('leadId').value = lead.id;
+    document.getElementById('btnDelete').style.display = 'inline-block';
+  } else {
+    fields.forEach(f=> document.getElementById(f).value = '');
+    document.getElementById('status').value = 'Novo Lead';
+    document.getElementById('leadId').value = '';
+    document.getElementById('btnDelete').style.display = 'none';
+  }
+  modal.classList.add('open');
+  modal.setAttribute('aria-hidden','false');
+}
+
+function closeModal(){ modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); }
+
+document.getElementById('btnNew').addEventListener('click', ()=> openModal());
+document.getElementById('btnCancel').addEventListener('click', ()=> closeModal());
+
+form.addEventListener('submit', e=>{
+  e.preventDefault();
+  const id = document.getElementById('leadId').value;
+  const obj = {
+    id: id || uid(),
+    name: document.getElementById('name').value.trim(),
+    phone: document.getElementById('phone').value.trim(),
+    email: document.getElementById('email').value.trim(),
+    notes: document.getElementById('notes').value.trim(),
+    status: document.getElementById('status').value
+  };
+  if(id){
+    const idx = leads.findIndex(l=>l.id===id);
+    leads[idx] = obj;
+  } else {
+    leads.unshift(obj);
+  }
+  render();
+  closeModal();
+});
+
+document.getElementById('btnDelete').addEventListener('click', ()=>{
+  const id = document.getElementById('leadId').value;
+  if(!id) return;
+  if(confirm('Deseja realmente excluir este lead?')){
+    leads = leads.filter(l=>l.id!==id);
+    render();
+    closeModal();
+  }
+});
+
+/* search */
+document.getElementById('search').addEventListener('input', ()=> render());
+
+/* export / import */
+document.getElementById('btnExport').addEventListener('click', ()=>{
+  const data = JSON.stringify(leads, null, 2);
+  const blob = new Blob([data], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = 'master_crm_leads.json'; a.click(); URL.revokeObjectURL(url);
+});
+
+document.getElementById('btnImport').addEventListener('click', ()=>{
+  const input = document.createElement('input'); input.type='file'; input.accept='application/json';
+  input.onchange = e=>{
+    const f = e.target.files[0]; if(!f) return;
+    const reader = new FileReader();
+    reader.onload = ev=>{
+      try{
+        const imported = JSON.parse(ev.target.result);
+        if(!Array.isArray(imported)) throw new Error('Formato inválido');
+        imported.forEach(it=>{
+          if(!it.id) it.id = uid();
+          const exists = leads.find(l=>l.id===it.id);
+          if(exists) Object.assign(exists, it); else leads.push(it);
+        });
+        render(); alert('Importação concluída');
+      }catch(err){ alert('Erro ao importar: '+err.message) }
+    };
+    reader.readAsText(f);
+  };
+  input.click();
+});
+
+/* theme */
+const themeKey = 'master_crm_theme';
+document.getElementById('btnTheme').addEventListener('click', ()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem(themeKey, document.body.classList.contains('dark') ? 'dark' : 'light');
+});
+(function loadTheme(){ const t = localStorage.getItem(themeKey); if(t==='dark') document.body.classList.add('dark'); })();
+
+/* helper */
+function escapeHtml(s){ if(!s) return ''; return s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+
+/* sample data if empty */
+if(!leads.length){
+  leads.push({id:uid(),name:'João Silva',phone:'(11) 9xxxx-xxxx',email:'joao@ex.com',notes:'Primeiro contato — WhatsApp. Agendar visita.',status:'Novo Lead'});
+  leads.push({id:uid(),name:'Maria Souza',phone:'',email:'maria@ex.com',notes:'Interessada em 2 unidades. Enviar proposta.',status:'Negociação'});
+  leads.push({id:uid(),name:'Carlos Lima',phone:'',email:'',notes:'Em negociação — aguardando documentos.',status:'Negociação em Andamento'});
+  leads.push({id:uid(),name:'Ana Pereira',phone:'',email:'ana@ex.com',notes:'Fechado — assinado em 02/11/2025',status:'Fechado'});
+  save();
+}
+
+render();
+
+/* close modal clicking outside */
+modal.addEventListener('click', e=>{ if(e.target===modal) closeModal(); });
+</script>
+
+</body>
+</html>
